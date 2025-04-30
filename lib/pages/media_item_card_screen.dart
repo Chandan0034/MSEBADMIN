@@ -103,14 +103,14 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
   // _updateFinally(String id)async{
   //   try{
   //     bool result = await _authService.updateByAdminAssignWorker(id);
-  //     if (result) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           content: const Text("Issue has been solved"),
-  //           backgroundColor: Colors.green,
-  //         ),
-  //       );
-  //     }
+  //     // if (result) {
+  //     //   ScaffoldMessenger.of(context).showSnackBar(
+  //     //     SnackBar(
+  //     //       content: const Text("Issue has been solved"),
+  //     //       backgroundColor: Colors.green,
+  //     //     ),
+  //     //   );
+  //     // }
   //   }catch(e){
   //
   //   }

@@ -369,7 +369,6 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
   }
 
   Future<void> _onAssignTap(String id) async {
-    _showMediaSourceSelectionDialog();
     setState(() {
       _isLoading = true;
     });
@@ -534,7 +533,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                 const SizedBox(width: 5),
                 Expanded(
                   child: GestureDetector(
-                    onTap: _isLoading || _isAssigned ? null :()=> _onAssignTap(id),
+                    onTap: _mediaFile==null? _showMediaSourceSelectionDialog:()=> _onAssignTap(id),
                     child: Container(
                       margin: const EdgeInsets.all(6),
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -551,8 +550,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                       ),
                       //changes open camera and delete card
                       child: Center(
-                        child: Text(
-                          "Issue solved",
+                        child: Text(_mediaFile==null?
+                          "Issue solved":"Upload Media",
                           style: TextStyle(
                             fontFamily: "Poppins",
                             color: Colors.black,
