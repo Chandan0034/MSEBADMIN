@@ -246,33 +246,6 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
   bool _isAssigned = false;
   // Call your updateByAdminAssignWorker function here
 
-  Future<void> _pickImageFromCamera() async {
-    _clearMedia();
-    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      setState(() {
-        _mediaFile = File(pickedFile.path);
-        _isVideo = false;
-      });
-    }
-    // _setLoading(false);
-  }
-
-  Future<void> _pickVideoFromCamera() async {
-    // _setLoading(true);
-    _clearMedia();
-    final pickedFile = await _picker.pickVideo(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      setState(() {
-        _mediaFile = File(pickedFile.path);
-        _isVideo = true;
-        // _initializeVideoController();
-      });
-    }
-    // _setLoading(false);
-  }
 
   // void _initializeVideoController() {
   //   if (_mediaFile != null) {
@@ -286,17 +259,39 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
   //   }
   // }
 
-  void _clearMedia() {
-    // _description = null;
-    _mediaFile = null;
-    // if (_videoController != null) {
-    //   _videoController!.dispose();
-    //   _videoController = null;
-    // }
+  Future<void> _pickImageFromCamera() async {
+    _clearMedia();
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _mediaFile = File(pickedFile.path);
+        _isVideo = false;
+      });
+    }
   }
 
+  void _clearMedia() {
+    setState(() {
+      _mediaFile = null;
+    });
+  }
+
+
+  Future<void> _pickVideoFromCamera() async {
+    _clearMedia();
+    final pickedFile = await _picker.pickVideo(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _mediaFile = File(pickedFile.path);
+        _isVideo = true;
+      });
+    }
+  }
+
+
   Future<void> _showMediaSourceSelectionDialog() async {
-    // _setLoading(true);
     try {
       await showDialog(
         context: context,
@@ -331,88 +326,102 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
       print("Error: $e");
     }
   }
+
+
+  Future<void> _uploadMedia(String id) async {
+    if (_mediaFile == null) {
+      _showSnackBar('Please select a media file', Colors.red);
+      return;
+    }
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      bool success = await _authService.updateMediaWhenWorkDone(
+        mediaFile: _mediaFile!,
+        id: id,
+        fileType: _isVideo ? 'video' : 'image',
+      );
+
+      if (!success) {
+        throw Exception('Upload failed');
+      }
+
+      _showSnackBar('Data successfully uploaded.', Colors.green);
+      _clearMedia();
+    } catch (e) {
+      _showSnackBar('Error uploading data.', Colors.red);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
+    }
+  }
   void _showSnackBar(String message, Color backgroundColor) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
         backgroundColor: backgroundColor,
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       ),
     );
   }
 
-  Future<void> _uploadMedia(String id) async {
-    if (_mediaFile == null ) {
-      _showSnackBar('Please select a media file', Colors.red);
-      return;
-    }
-    // _setLoading(true);
-    _isUploading = true;
 
-    try{
-
-      bool success = await _authService.updateMediaWhenWorkDone(mediaFile: _mediaFile!, id: id, fileType: _isVideo ? 'video' : 'image');
-
-      if (!success) {
-        throw Exception('Server upload failed.');
-      }
-      // Show success message
-      _showSnackBar('Data successfully uploaded.', Colors.green);
-      _clearMedia();
-    } catch (e) {
-      _showSnackBar('Error uploading data. Rollback initiated.', Colors.red);
-    } finally {
-      // _setLoading(false);
-      _isUploading = false;
-    }
-  }
-
-  Future<void> _onAssignTap(String id) async {
-    setState(() {
-      _isLoading = true;
-    });
-    _uploadMedia(id);
-
-    // try {
-    //   // Call the updateByAdminAssignWorker function
-    //   bool result = await _authService.updateByAdminAssignWorker(id);
-    //
-    //   setState(() {
-    //     _isLoading = false;
-    //     if (result) {
-    //       _isAssigned = true; // Mark as assigned if successful
-    //     }
-    //   });
-    //
-    //   if (result) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(
-    //         content: const Text("Status updated successfully!"),
-    //         backgroundColor: Colors.green,
-    //       ),
-    //     );
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(
-    //         content: const Text("Failed to update status."),
-    //         backgroundColor: Colors.red,
-    //       ),
-    //     );
-    //   }
-    // } catch (e) {
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    //
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text("Error: $e"),
-    //       backgroundColor: Colors.red,
-    //     ),
-    //   );
-    // }
-  }
+  // Future<void> _onAssignTap(String id) async {
+  //   // setState(() {
+  //   //   _isLoading = true;
+  //   // });
+  //   _uploadMedia(id);
+  //
+  //   // try {
+  //   //   // Call the updateByAdminAssignWorker function
+  //   //   bool result = await _authService.updateByAdminAssignWorker(id);
+  //   //
+  //   //   setState(() {
+  //   //     _isLoading = false;
+  //   //     if (result) {
+  //   //       _isAssigned = true; // Mark as assigned if successful
+  //   //     }
+  //   //   });
+  //   //
+  //   //   if (result) {
+  //   //     ScaffoldMessenger.of(context).showSnackBar(
+  //   //       SnackBar(
+  //   //         content: const Text("Status updated successfully!"),
+  //   //         backgroundColor: Colors.green,
+  //   //       ),
+  //   //     );
+  //   //   } else {
+  //   //     ScaffoldMessenger.of(context).showSnackBar(
+  //   //       SnackBar(
+  //   //         content: const Text("Failed to update status."),
+  //   //         backgroundColor: Colors.red,
+  //   //       ),
+  //   //     );
+  //   //   }
+  //   // } catch (e) {
+  //   //   setState(() {
+  //   //     _isLoading = false;
+  //   //   });
+  //   //
+  //   //   ScaffoldMessenger.of(context).showSnackBar(
+  //   //     SnackBar(
+  //   //       content: Text("Error: $e"),
+  //   //       backgroundColor: Colors.red,
+  //   //     ),
+  //   //   );
+  //   // }
+  // }
   @override
   Widget build(BuildContext context) {
     final id=widget.mediaItem['id']??'';
@@ -533,7 +542,13 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                 const SizedBox(width: 5),
                 Expanded(
                   child: GestureDetector(
-                    onTap: _mediaFile==null? _showMediaSourceSelectionDialog:()=> _onAssignTap(id),
+                    onTap: () async {
+                      if (_mediaFile == null) {
+                        await _showMediaSourceSelectionDialog();
+                      } else {
+                        await _uploadMedia(id);
+                      }
+                    },
                     child: Container(
                       margin: const EdgeInsets.all(6),
                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -548,11 +563,12 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                           ),
                         ],
                       ),
-                      //changes open camera and delete card
                       child: Center(
-                        child: Text(_mediaFile==null?
-                          "Issue solved":"Upload Media",
-                          style: TextStyle(
+                        child: _isUploading
+                            ? const CircularProgressIndicator()
+                            : Text(
+                          _mediaFile == null ? "Issue solved" : "Upload Media",
+                          style: const TextStyle(
                             fontFamily: "Poppins",
                             color: Colors.black,
                             fontSize: 16,
@@ -562,6 +578,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                       ),
                     ),
                   ),
+
                 ),
               ],
             )

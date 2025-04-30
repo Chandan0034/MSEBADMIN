@@ -206,22 +206,32 @@ class FirebaseAuthService {
     required String fileType,
   }) async {
     try {
-      String uuid = const Uuid().v4();
-      String fileExtension = fileType == 'image' ? 'jpg' : 'mp4';
-      String filePath = "media/$uuid/${DateTime.now().millisecondsSinceEpoch}.$fileExtension";
+      if (!mediaFile.existsSync()) {
+        print("File does not exist");
+        return false;
+      }
+
+      final String uuid = const Uuid().v4();
+      final String fileExtension = fileType == 'image' ? 'jpg' : 'mp4';
+      final String filePath =
+          "media/$uuid/${DateTime.now().millisecondsSinceEpoch}.$fileExtension";
 
       // Upload the file
-      TaskSnapshot uploadTask = await _storage.ref(filePath).putFile(mediaFile);
+      final TaskSnapshot uploadTask =
+      await FirebaseStorage.instance.ref(filePath).putFile(mediaFile);
 
       // Get the download URL
-      String downloadURL = await uploadTask.ref.getDownloadURL();
+      final String downloadURL = await uploadTask.ref.getDownloadURL();
 
-      // Update Firestore document with the download URL
-      await _firestore.collection("MediaFileWithLocation").doc(id).update({
+      // Update Firestore
+      await FirebaseFirestore.instance
+          .collection("MediaFileWithLocation")
+          .doc(id)
+          .update({
         'completedURL': downloadURL,
-        'uploadedAt': DateTime.now(),
-        'isCompleted':true,
-        'completedURLType':fileType// Optional: to track when upload happened
+        'uploadedAt': Timestamp.now(),
+        'isCompleted': true,
+        'completedURLType': fileType,
       });
 
       return true;
@@ -230,6 +240,7 @@ class FirebaseAuthService {
       return false;
     }
   }
+
   Future<bool> uploadAlertMessage(String message) async{
     try{
       User? user = _firebaseAuth.currentUser;
