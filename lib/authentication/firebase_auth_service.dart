@@ -202,7 +202,7 @@ class FirebaseAuthService {
   }
   Future<bool> updateMediaWhenWorkDone({
     required File mediaFile,
-    required String id,         // This is the unique ID stored as a field
+    required String id,         // This is the value of the 'id' field inside the document
     required String fileType,
   }) async {
     try {
@@ -210,19 +210,19 @@ class FirebaseAuthService {
       String fileExtension = fileType == 'image' ? 'jpg' : 'mp4';
       String filePath = "media/$uuid/${DateTime.now().millisecondsSinceEpoch}.$fileExtension";
 
-      // Upload the file
+      // Upload media to Firebase Storage
       TaskSnapshot uploadTask = await _storage.ref(filePath).putFile(mediaFile);
       String downloadURL = await uploadTask.ref.getDownloadURL();
 
-      // 🔍 Query for the document with matching unique ID
+      // 🔍 Find document where 'id' field matches the given ID
       final querySnapshot = await _firestore
           .collection("MediaFileWithLocation")
-          .where("uid", isEqualTo: id) // assuming the field name is "uid"
+          .where("id", isEqualTo: id) // 'id' is the field inside the doc
           .limit(1)
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        print("Document with uid = $id not found.");
+        print("Document with id = $id not found.");
         return false;
       }
 
@@ -241,6 +241,7 @@ class FirebaseAuthService {
       return false;
     }
   }
+
 
   Future<bool> uploadAlertMessage(String message) async{
     try{
