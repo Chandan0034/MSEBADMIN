@@ -205,6 +205,7 @@ class FirebaseAuthService {
     required String id,
     required String fileType,
   }) async {
+    print(id);
     try {
       if (!mediaFile.existsSync()) {
         print("File does not exist");
@@ -224,8 +225,7 @@ class FirebaseAuthService {
       final String downloadURL = await uploadTask.ref.getDownloadURL();
 
       // Update Firestore
-      await FirebaseFirestore.instance
-          .collection("MediaFileWithLocation")
+      await _firestore.collection("MediaFileWithLocation")
           .doc(id)
           .update({
         'completedURL': downloadURL,
