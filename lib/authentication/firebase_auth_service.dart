@@ -225,15 +225,20 @@ class FirebaseAuthService {
       final String downloadURL = await uploadTask.ref.getDownloadURL();
 
       // Update Firestore
-      await _firestore.collection("MediaFileWithLocation")
-          .doc(id)
-          .update({
-        'completedURL': downloadURL,
-        'uploadedAt': Timestamp.now(),
-        'isCompleted': true,
-        'completedURLType': fileType,
-      });
+      final docRef = _firestore.collection("MediaFileWithLocation").doc(id);
+      final doc = await docRef.get();
 
+      if (doc.exists) {
+        await docRef.update({
+          'completedURL': downloadURL,
+          'uploadedAt': DateTime.now(),
+          'isCompleted': true,
+          'completedURLType': fileType,
+        });
+      } else {
+        print("Document with id $id not found.");
+        return false;
+      }
       return true;
     } catch (e) {
       print("Error updating media: $e");
