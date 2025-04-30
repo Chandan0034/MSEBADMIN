@@ -202,43 +202,39 @@ class FirebaseAuthService {
   }
   Future<bool> updateMediaWhenWorkDone({
     required File mediaFile,
-    required String id,
+    required String id,         // This is the unique ID stored as a field
     required String fileType,
   }) async {
-    print(id);
     try {
-      if (!mediaFile.existsSync()) {
-        print("File does not exist");
-        return false;
-      }
-
-      final String uuid = const Uuid().v4();
-      final String fileExtension = fileType == 'image' ? 'jpg' : 'mp4';
-      final String filePath =
-          "media/$uuid/${DateTime.now().millisecondsSinceEpoch}.$fileExtension";
+      String uuid = const Uuid().v4();
+      String fileExtension = fileType == 'image' ? 'jpg' : 'mp4';
+      String filePath = "media/$uuid/${DateTime.now().millisecondsSinceEpoch}.$fileExtension";
 
       // Upload the file
-      final TaskSnapshot uploadTask =
-      await FirebaseStorage.instance.ref(filePath).putFile(mediaFile);
+      TaskSnapshot uploadTask = await _storage.ref(filePath).putFile(mediaFile);
+      String downloadURL = await uploadTask.ref.getDownloadURL();
 
-      // Get the download URL
-      final String downloadURL = await uploadTask.ref.getDownloadURL();
+      // 🔍 Query for the document with matching unique ID
+      final querySnapshot = await _firestore
+          .collection("MediaFileWithLocation")
+          .where("uid", isEqualTo: id) // assuming the field name is "uid"
+          .limit(1)
+          .get();
 
-      // Update Firestore
-      final docRef = _firestore.collection("MediaFileWithLocation").doc(id);
-      final doc = await docRef.get();
-
-      if (doc.exists) {
-        await docRef.update({
-          'completedURL': downloadURL,
-          'uploadedAt': DateTime.now(),
-          'isCompleted': true,
-          'completedURLType': fileType,
-        });
-      } else {
-        print("Document with id $id not found.");
+      if (querySnapshot.docs.isEmpty) {
+        print("Document with uid = $id not found.");
         return false;
       }
+
+      // 📝 Update the found document
+      String docId = querySnapshot.docs.first.id;
+      await _firestore.collection("MediaFileWithLocation").doc(docId).update({
+        'completedURL': downloadURL,
+        'uploadedAt': DateTime.now(),
+        'isCompleted': true,
+        'completedURLType': fileType,
+      });
+
       return true;
     } catch (e) {
       print("Error updating media: $e");
