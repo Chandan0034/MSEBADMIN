@@ -131,6 +131,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
+            const SizedBox(height: 5),
             // Display the media file at the top (Image or Video)
             if (isImage)
               Row(
@@ -223,8 +225,6 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             else
               const Center(child: CircularProgressIndicator()),
             const SizedBox(height: 10),
-            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
-            const SizedBox(height: 5),
             Text("${widget.mediaItem['faultName']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
             const SizedBox(height: 5),
             Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),

@@ -429,6 +429,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
+            const SizedBox(height: 5),
             if (isImage)
               Stack(
                 children: [
@@ -465,13 +467,6 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
             else
               const Center(child: CircularProgressIndicator()),
             const SizedBox(height: 20),
-            const SizedBox(height: 10),
-            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
-            const SizedBox(height: 5),
-            Text("${widget.mediaItem['faultName']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
-            const SizedBox(height: 5),
-            Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
-            // Display description below the media file
             Text(
               "Date : ${widget.mediaItem['date']}",
               style: const TextStyle(
@@ -486,9 +481,6 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                     fontSize: 14,
                     fontFamily: "Poppins")),
             const SizedBox(height: 15),
-
-            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
-            const SizedBox(height: 5),
             Text("${widget.mediaItem['faultName']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
             const SizedBox(height: 5),
             Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
