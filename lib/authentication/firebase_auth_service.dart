@@ -104,6 +104,10 @@ class FirebaseAuthService {
 
     return FirebaseFirestore.instance.collection("MediaFileWithLocation").where('isCompleted',isEqualTo: false).snapshots();
   }
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1() {
+
+    return FirebaseFirestore.instance.collection("MediaFileWithLocation").where('isCompleted',isEqualTo: false).snapshots();
+  }
   Stream<List<Map<String, dynamic>>> getMediaDataStream() {
     return _firestore
         .collection("MediaFileWithLocation")
