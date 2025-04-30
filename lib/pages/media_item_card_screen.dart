@@ -122,6 +122,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     final downloadURL=widget.mediaItem['downloadURL']?? '';
     final currentStatus = widget.cnt;
     final allowMarkAsSolved=widget.mediaItem['isCompleted'];
+    final completedUrl=widget.mediaItem['completedURL'];
     return Card(
       color: const Color(0xFFECECEC),
       elevation: 0,
@@ -141,7 +142,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15), // Apply border radius here
                       child: CachedNetworkImage(
-                        imageUrl: downloadURL,
+                        imageUrl: allowMarkAsSolved?completedUrl:downloadURL,
                         fit: BoxFit.fill,
                         height: 300,
                         width: 180,
@@ -269,13 +270,13 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                 margin: const EdgeInsets.only(top: 30,left: 20 , right: 20, bottom: 2),
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 decoration: BoxDecoration(
-                  color: currentStatus == 2
+                  color: allowMarkAsSolved
                       ? Colors.white
                       : Colors.white.withOpacity(.3),
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color:currentStatus==2
+                      color:allowMarkAsSolved
                           ? Colors.grey.withOpacity(0.5)
                           : Colors.transparent,
                       blurRadius: 5,
@@ -288,7 +289,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                     "Mark as solved",
                     style: TextStyle(
                       fontFamily: "Poppins",
-                      color: currentStatus == 2
+                      color:allowMarkAsSolved
                           ? Colors.black
                           : Colors.black.withOpacity(.1),
                       fontSize: 16,
