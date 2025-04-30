@@ -352,6 +352,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
       _showSnackBar('Data successfully uploaded.', Colors.green);
       _clearMedia();
     } catch (e) {
+    } catch (e) {
+      print("Upload error: $e"); // <- This will help identify the problem
       _showSnackBar('Error uploading data.', Colors.red);
     } finally {
       if (mounted) {
@@ -375,8 +377,6 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
       ),
     );
   }
-
-
   // Future<void> _onAssignTap(String id) async {
   //   // setState(() {
   //   //   _isLoading = true;
