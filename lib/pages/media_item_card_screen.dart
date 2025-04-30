@@ -247,7 +247,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             // const SizedBox(height: 8),
 
             GestureDetector(
-              onTap: _updateFinally(widget.mediaItem['id']),
+              onTap:()=> _updateFinally(widget.mediaItem['id']),
               // onTap: () {
               //   widget.cnt == 4
               //       ? Navigator.push(
