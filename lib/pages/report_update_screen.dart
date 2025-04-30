@@ -12,6 +12,7 @@ class ReportUpdateScreen extends StatefulWidget {
 
 class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
   final FirebaseAuthService _authService = FirebaseAuthService();
+  String selectedFilter = ''; // Global variable
 
   @override
   Widget build(BuildContext context) {
@@ -34,24 +35,57 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
               alignment: Alignment.topLeft,
               margin: const EdgeInsets.only(left: 15,top: 14), // Left margin only
               padding: EdgeInsets.zero, // Ensure no extra padding
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Report Updates",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w700,
+              child: Container(
+                margin: EdgeInsets.only(left: 8,right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Report Updates",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  GestureDetector(
-                    child: Container(
-                      child: Image.asset("assets/Image/filter.png"),
+                    GestureDetector(
+                      onTapDown: (TapDownDetails details) async {
+                        final selected = await showMenu<String>(
+                          context: context,
+                          position: RelativeRect.fromLTRB(
+                            details.globalPosition.dx,
+                            details.globalPosition.dy,
+                            details.globalPosition.dx,
+                            details.globalPosition.dy,
+                          ),
+                          items: const [
+                            PopupMenuItem(
+                              value: 'In Process',
+                              child: Text('In Process'),
+                            ),
+                            PopupMenuItem(
+                              value: 'Completed',
+                              child: Text('Completed'),
+                            ),
+                          ],
+                        );
+
+                        if (selected != null) {
+                          selectedFilter = selected; // update global variable
+                          print("Global filter selected: $selectedFilter");
+                          // Optionally trigger UI updates here if needed
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.asset("assets/Image/filter.png", width: 24, height: 24),
+                      ),
                     ),
-                  )
-                ],
+
+
+                  ],
+                ),
               ),
             ),
           ),
