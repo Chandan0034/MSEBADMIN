@@ -335,6 +335,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
+            const SizedBox(height: 5),
             if (isImage)
               Stack(
                 children: [
@@ -386,6 +388,10 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                     fontSize: 16,
                     fontFamily: "Poppins")),
             const SizedBox(height: 15),
+            Text("${widget.mediaItem['faultName']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
+            const SizedBox(height: 5),
+            Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
+            const SizedBox(height: 10),
             GestureDetector(
               onTap:  _isLoading || _isAssigned ? null :()=> _onAssignTap(id),
               child: Container(
