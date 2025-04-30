@@ -446,8 +446,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                       alignment: Alignment.topLeft,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15), // Apply border radius here
-                        child: CachedNetworkImage(
-                          imageUrl: _mediaFile==null? downloadURL: _mediaFile!.path,
+                        child: _mediaFile==null?CachedNetworkImage(
+                          imageUrl:downloadURL,
                           fit: BoxFit.fill,
                           height: 300,
                           width: double.infinity,
@@ -458,7 +458,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                             ),
                           ),
                           errorWidget: (context, url, error) => Icon(Icons.error),
-                        ),
+                        ):Image.file(_mediaFile!,fit: BoxFit.fill,height: 300,width: double.infinity,),
                       ),
                     ),
                   ),
