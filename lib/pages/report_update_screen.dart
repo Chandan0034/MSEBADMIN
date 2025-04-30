@@ -79,6 +79,8 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
                       },
                       child: Container(
                         padding: const EdgeInsets.all(8.0),
+                        width: 24,
+                        height: 24,
                         child: Image.asset("assets/Image/filter.png", width: 24, height: 24),
                       ),
                     ),
