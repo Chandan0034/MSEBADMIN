@@ -447,7 +447,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15), // Apply border radius here
                         child: CachedNetworkImage(
-                          imageUrl: downloadURL,
+                          imageUrl: _mediaFile==null? downloadURL: _mediaFile!.path,
                           fit: BoxFit.fill,
                           height: 300,
                           width: double.infinity,
