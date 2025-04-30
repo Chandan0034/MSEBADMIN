@@ -113,7 +113,6 @@ class FirebaseAuthService {
       return snapshot.docs.map((doc) => doc.data()).toList();
     });
   }
-
   Future<List<Map<String, dynamic>>> getDataOnce() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =

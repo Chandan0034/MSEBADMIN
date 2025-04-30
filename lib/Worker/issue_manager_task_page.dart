@@ -542,7 +542,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () async {
-                      if (_mediaFile == null) {
+                      if (_mediaFile == null && !_isUploading) {
                         await _showMediaSourceSelectionDialog();
                       } else {
                         await _uploadMedia(id);
@@ -566,7 +566,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                         child: _isUploading
                             ? const CircularProgressIndicator()
                             : Text(
-                          _mediaFile == null ? "Issue solved" : "Upload Media",
+                          _mediaFile == null ? "Upload Media" : "Issue Solved",
                           style: const TextStyle(
                             fontFamily: "Poppins",
                             color: Colors.black,
