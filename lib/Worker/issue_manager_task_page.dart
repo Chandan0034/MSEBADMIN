@@ -201,7 +201,7 @@ class _AssignWorkState extends State<AssignWork> {
                           }
 
                           // Apply the condition
-                          if (completedCount > 3 && !mediaItem['isCompleted']) {
+                          if (completedCount > 3 ) {
                             return MediaItemCardScreen(
                               mediaItem: mediaItem,
                               cnt: completedCount - 1,
@@ -465,21 +465,34 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
             else
               const Center(child: CircularProgressIndicator()),
             const SizedBox(height: 20),
+            const SizedBox(height: 10),
+            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
+            const SizedBox(height: 5),
+            Text("${widget.mediaItem['faultName']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
+            const SizedBox(height: 5),
+            Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
             // Display description below the media file
             Text(
               "Date : ${widget.mediaItem['date']}",
               style: const TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontSize: 16,
+                  fontSize: 14,
                   fontFamily: "Poppins"),
             ),
             const SizedBox(height: 2),
             Text("Time : ${widget.mediaItem['time']}",
                 style: const TextStyle(
                     fontWeight: FontWeight.w500,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontFamily: "Poppins")),
             const SizedBox(height: 15),
+
+            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
+            const SizedBox(height: 5),
+            Text("${widget.mediaItem['faultName']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
+            const SizedBox(height: 5),
+            Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

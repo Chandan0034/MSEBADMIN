@@ -34,13 +34,24 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
               alignment: Alignment.topLeft,
               margin: const EdgeInsets.only(left: 15,top: 14), // Left margin only
               padding: EdgeInsets.zero, // Ensure no extra padding
-              child: const Text(
-                "Report Updates",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w700,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Report Updates",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  GestureDetector(
+                    child: Container(
+                      child: Image.asset("assets/Image/filter.png"),
+                    ),
+                  )
+                ],
               ),
             ),
           ),

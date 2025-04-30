@@ -100,21 +100,21 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     _videoPlayerController?.dispose();
     super.dispose();
   }
-  _updateFinally(String id)async{
-    try{
-      bool result = await _authService.updateByAdminAssignWorker(id);
-      if (result) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Issue has been solved"),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    }catch(e){
-
-    }
-  }
+  // _updateFinally(String id)async{
+  //   try{
+  //     bool result = await _authService.updateByAdminAssignWorker(id);
+  //     if (result) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           content: const Text("Issue has been solved"),
+  //           backgroundColor: Colors.green,
+  //         ),
+  //       );
+  //     }
+  //   }catch(e){
+  //
+  //   }
+  // }
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -222,7 +222,12 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
               )
             else
               const Center(child: CircularProgressIndicator()),
-
+            const SizedBox(height: 10),
+            Text("${widget.mediaItem['UserName']}",style: TextStyle(fontWeight: FontWeight.bold,fontFamily: 'Poppins',fontSize: 16),),
+            const SizedBox(height: 5),
+            Text("${widget.mediaItem['faultName']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
+            const SizedBox(height: 5),
+            Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
 
             // Display description below the media file
             // Text(
@@ -241,7 +246,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             // const SizedBox(height: 8),
 
             GestureDetector(
-              onTap: _updateFinally(widget.mediaItem['id']),
+              // onTap: _updateFinally(widget.mediaItem['id']),
               // onTap: () {
               //   widget.cnt == 4
               //       ? Navigator.push(
