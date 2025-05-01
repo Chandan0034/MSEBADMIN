@@ -98,7 +98,7 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
                 return Padding(
                   padding: const EdgeInsets.only(left: 12, right: 12), // Only horizontal padding
                   child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                    stream: _authService.fetchAllUserData1(selectedFilter),
+                    stream: _authService.fetchAllUserData1(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
