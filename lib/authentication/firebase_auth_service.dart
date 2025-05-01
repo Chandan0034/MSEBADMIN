@@ -104,9 +104,9 @@ class FirebaseAuthService {
 
     return FirebaseFirestore.instance.collection("MediaFileWithLocation").where('isCompleted',isEqualTo: false).snapshots();
   }
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1() {
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1(String filter) {
 
-    return FirebaseFirestore.instance.collection("MediaFileWithLocation").snapshots();
+    return FirebaseFirestore.instance.collection("MediaFileWithLocation").where(filter,isEqualTo: true).snapshots();
   }
   Stream<List<Map<String, dynamic>>> getMediaDataStream() {
     return _firestore
@@ -161,6 +161,8 @@ class FirebaseAuthService {
           // Update the document with the modified statusList
           await docRef.update({
             'statusList': statusList,
+            'inProcess':false,
+            'completed':true
           });
 
           print("Next status updated successfully for id: $id");

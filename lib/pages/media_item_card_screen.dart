@@ -123,6 +123,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     final currentStatus = widget.cnt;
     final allowMarkAsSolved=widget.mediaItem['isCompleted'];
     final completedUrl=widget.mediaItem['completedURL'];
+    final inProcess=widget.mediaItem['inProcess'];
     return Card(
       color: const Color(0xFFECECEC),
       elevation: 0,
@@ -247,7 +248,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             // const SizedBox(height: 8),
 
             GestureDetector(
-              onTap:()=> _updateFinally(widget.mediaItem['id']),
+              onTap:inProcess?()=> _updateFinally(widget.mediaItem['id']):null,
               // onTap: () {
               //   widget.cnt == 4
               //       ? Navigator.push(

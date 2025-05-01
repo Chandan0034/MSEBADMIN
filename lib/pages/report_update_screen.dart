@@ -12,7 +12,7 @@ class ReportUpdateScreen extends StatefulWidget {
 
 class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
   final FirebaseAuthService _authService = FirebaseAuthService();
-  String selectedFilter = ''; // Global variable
+  String selectedFilter = 'inProcess'; // Global variable
 
   @override
   Widget build(BuildContext context) {
@@ -61,11 +61,11 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
                           ),
                           items: const [
                             PopupMenuItem(
-                              value: 'In Process',
+                              value: 'inProcess',
                               child: Text('In Process'),
                             ),
                             PopupMenuItem(
-                              value: 'Completed',
+                              value: 'completed',
                               child: Text('Completed'),
                             ),
                           ],
@@ -98,7 +98,7 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
                 return Padding(
                   padding: const EdgeInsets.only(left: 12, right: 12), // Only horizontal padding
                   child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                    stream: _authService.fetchAllUserData1(),
+                    stream: _authService.fetchAllUserData1(selectedFilter),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
