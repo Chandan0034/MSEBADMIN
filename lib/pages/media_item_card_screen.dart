@@ -27,6 +27,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
   // String downloadURL = "";
   bool isMediaReady = false;
   bool isUpdating = false;
+  int count=0;
 
   final List<String> statuses = [
     "Work Assigned",
@@ -102,6 +103,9 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     super.dispose();
   }
   Future<bool> _updateFinally(String id) async {
+    setState(() {
+      count++;
+    });
     try {
       bool result = await _authService.updateByAdminAssignWorker(id);
       if (result) {
@@ -287,8 +291,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                      : Text(
-                    inProcess ? "Mark as solved" : "Completed",
+                      : Text(count==0
+                     ? "Mark as solved" : "Completed",
                     style: const TextStyle(
                       fontFamily: "Poppins",
                       color: Colors.black,
