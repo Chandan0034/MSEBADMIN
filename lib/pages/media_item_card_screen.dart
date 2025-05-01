@@ -248,25 +248,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             // const SizedBox(height: 8),
 
             GestureDetector(
-              onTap:()=> _updateFinally(widget.mediaItem['id']),
-              // onTap: () {
-              //   widget.cnt == 4
-              //       ? Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //       builder: (context) => WorkShowPage(
-              //         mediaItem: widget.mediaItem,
-              //         cnt: widget.cnt,
-              //       ),
-              //     ),
-              //   )
-              //       : ScaffoldMessenger.of(context).showSnackBar(
-              //     const SnackBar(
-              //       content: Text('Processing... Please wait.'),
-              //       backgroundColor: Colors.red,
-              //     ),
-              //   );
-              // },
+              onTap:inProcess?null:()=> _updateFinally(widget.mediaItem['id']),
               child: Container(
                 width: double.infinity,
                 margin: const EdgeInsets.only(top: 30,left: 20 , right: 20, bottom: 2),
@@ -287,8 +269,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                   ],
                 ),
                 child: Center(
-                  child: Text(
-                    "Mark as solved",
+                  child: Text(inProcess?
+                    "Mark as solved":"Completed",
                     style: TextStyle(
                       fontFamily: "Poppins",
                       color:allowMarkAsSolved
