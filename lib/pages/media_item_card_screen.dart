@@ -248,7 +248,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             // const SizedBox(height: 8),
 
             GestureDetector(
-              onTap:inProcess?null:()=> _updateFinally(widget.mediaItem['id']),
+              onTap:inProcess?()=> _updateFinally(widget.mediaItem['id']):null,
               child: Container(
                 width: double.infinity,
                 margin: const EdgeInsets.only(top: 30,left: 20 , right: 20, bottom: 2),
