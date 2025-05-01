@@ -143,10 +143,10 @@ class _AssignWorkState extends State<AssignWork> {
                           }
 
                           // Apply the condition
-                          if (completedCount <= 2) {
+                          if (completedCount < 2) {
                             return MediaItemCardScreen(
                               mediaItem: mediaItem,
-                              cnt: completedCount - 1,
+                              cnt: completedCount,
                             );
                           } else {
                             return const SizedBox.shrink(); // Empty widget if condition not met
