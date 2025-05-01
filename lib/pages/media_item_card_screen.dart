@@ -26,6 +26,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
   FirebaseAuthService _authService = FirebaseAuthService();
   // String downloadURL = "";
   bool isMediaReady = false;
+  bool isUpdating = false;
 
   final List<String> statuses = [
     "Work Assigned",
@@ -100,21 +101,30 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     _videoPlayerController?.dispose();
     super.dispose();
   }
-  _updateFinally(String id)async{
-    try{
+  Future<bool> _updateFinally(String id) async {
+    try {
       bool result = await _authService.updateByAdminAssignWorker(id);
       if (result) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Issue has been solved"),
+          const SnackBar(
+            content: Text("Issue has been solved"),
             backgroundColor: Colors.green,
           ),
         );
+        return true;
       }
-    }catch(e){
-
+      return false;
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("An error occurred"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return false;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -248,34 +258,40 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             // const SizedBox(height: 8),
 
             GestureDetector(
-              onTap:inProcess?()=> _updateFinally(widget.mediaItem['id']):null,
+              onTap: isUpdating
+                  ? null
+                  : () async {
+                setState(() => isUpdating = true);
+                await _updateFinally(widget.mediaItem['id']);
+                setState(() => isUpdating = false);
+              },
               child: Container(
                 width: double.infinity,
-                margin: const EdgeInsets.only(top: 30,left: 20 , right: 20, bottom: 2),
+                margin: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 2),
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 decoration: BoxDecoration(
-                  color: allowMarkAsSolved
-                      ? Colors.white
-                      : Colors.white.withOpacity(.3),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color:allowMarkAsSolved
-                          ? Colors.grey.withOpacity(0.5)
-                          : Colors.transparent,
+                      color: Colors.grey.withOpacity(0.5),
                       blurRadius: 5,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Center(
-                  child: Text(inProcess?
-                    "Mark as solved":"Completed",
-                    style: TextStyle(
+                  child: isUpdating
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                      : Text(
+                    inProcess ? "Mark as solved" : "Completed",
+                    style: const TextStyle(
                       fontFamily: "Poppins",
-                      color:allowMarkAsSolved
-                          ? Colors.black
-                          : Colors.black.withOpacity(.1),
+                      color: Colors.black,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),

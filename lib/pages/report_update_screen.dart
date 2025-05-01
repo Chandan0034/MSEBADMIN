@@ -49,41 +49,41 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    GestureDetector(
-                      onTapDown: (TapDownDetails details) async {
-                        final selected = await showMenu<String>(
-                          context: context,
-                          position: RelativeRect.fromLTRB(
-                            details.globalPosition.dx,
-                            details.globalPosition.dy,
-                            details.globalPosition.dx,
-                            details.globalPosition.dy,
-                          ),
-                          items: const [
-                            PopupMenuItem(
-                              value: 'inProcess',
-                              child: Text('In Process'),
-                            ),
-                            PopupMenuItem(
-                              value: 'completed',
-                              child: Text('Completed'),
-                            ),
-                          ],
-                        );
-
-                        if (selected != null) {
-                          selectedFilter = selected; // update global variable
-                          print("Global filter selected: $selectedFilter");
-                          // Optionally trigger UI updates here if needed
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        width: 24,
-                        height: 24,
-                        child: Image.asset("assets/Image/filter.png", width: 24, height: 24),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTapDown: (TapDownDetails details) async {
+                    //     final selected = await showMenu<String>(
+                    //       context: context,
+                    //       position: RelativeRect.fromLTRB(
+                    //         details.globalPosition.dx,
+                    //         details.globalPosition.dy,
+                    //         details.globalPosition.dx,
+                    //         details.globalPosition.dy,
+                    //       ),
+                    //       items: const [
+                    //         PopupMenuItem(
+                    //           value: 'inProcess',
+                    //           child: Text('In Process'),
+                    //         ),
+                    //         PopupMenuItem(
+                    //           value: 'completed',
+                    //           child: Text('Completed'),
+                    //         ),
+                    //       ],
+                    //     );
+                    //
+                    //     if (selected != null) {
+                    //       selectedFilter = selected; // update global variable
+                    //       print("Global filter selected: $selectedFilter");
+                    //       // Optionally trigger UI updates here if needed
+                    //     }
+                    //   },
+                    //   child: Container(
+                    //     padding: const EdgeInsets.all(8.0),
+                    //     width: 24,
+                    //     height: 24,
+                    //     child: Image.asset("assets/Image/filter.png", width: 24, height: 24),
+                    //   ),
+                    // ),
 
 
                   ],
