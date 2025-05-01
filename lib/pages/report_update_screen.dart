@@ -130,10 +130,10 @@ class _ReportUpdateScreenState extends State<ReportUpdateScreen> {
                             }
 
                             // Handle condition for `completedCount > 2`
-                            if (completedCount > 2) {
+                            if (completedCount >= 2) {
                               return MediaItemCardScreen(
                                 mediaItem: mediaItem,
-                                cnt: completedCount - 2, // Adjusted count as per your logic
+                                cnt: completedCount - 3, // Adjusted count as per your logic
                               );
                             } else {
                               return const SizedBox.shrink(); // Skip items with `completedCount <= 2`
