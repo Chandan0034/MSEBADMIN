@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:admin/authentication/firebase_auth_service.dart';
@@ -103,11 +104,14 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     super.dispose();
   }
   Future<bool> _updateFinally(String id) async {
+    if(count>=1){
+      return false;
+    }
     setState(() {
       count++;
     });
     try {
-      bool result = await _authService.updateByAdminAssignWorker(id);
+      bool result = await _authService.updateByAdminAssignFinalWorker(id);
       if (result) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -138,6 +142,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     final allowMarkAsSolved=widget.mediaItem['isCompleted'];
     final completedUrl=widget.mediaItem['completedURL'];
     final inProcess=widget.mediaItem['inProcess'];
+    print("AllowMarkAsSolved");
+    print(currentStatus);
     return Card(
       color: const Color(0xFFECECEC),
       elevation: 0,
@@ -206,7 +212,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                                     duration: const Duration(seconds: 1),
                                     width: 4,
                                     height: 40,
-                                    color: index < currentStatus + 1
+                                    color: index < currentStatus
                                         ? Colors.blue
                                         : Colors.grey,
                                   ),
@@ -262,7 +268,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             // const SizedBox(height: 8),
 
             GestureDetector(
-              onTap: isUpdating
+              onTap: !allowMarkAsSolved
                   ? null
                   : () async {
                 setState(() => isUpdating = true);
@@ -274,11 +280,12 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                 margin: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 2),
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color:allowMarkAsSolved ? Colors.white:Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
+                  //opacity
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color:allowMarkAsSolved?Colors.grey.withOpacity(0.5):Colors.grey.withOpacity(0.1),
                       blurRadius: 5,
                       offset: const Offset(0, 4),
                     ),
@@ -291,11 +298,11 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                      : Text(count==0
+                      : Text(currentStatus<=1
                      ? "Mark as solved" : "Completed",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: "Poppins",
-                      color: Colors.black,
+                      color:allowMarkAsSolved?Colors.black: Colors.black.withOpacity(0.1),
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),

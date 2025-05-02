@@ -131,7 +131,55 @@ class FirebaseAuthService {
       return [];
     }
   }
+
   Future<bool> updateByAdminAssignWorker(String id) async {
+    try {
+      // Query the collection to find the document with the given id
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection("MediaFileWithLocation")
+          .where('id', isEqualTo: id)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // Get the first document from the query result
+        DocumentReference<Map<String, dynamic>> docRef = querySnapshot.docs.first.reference;
+
+        // Get the current document data
+        Map<String, dynamic>? docData = querySnapshot.docs.first.data();
+
+        if (docData != null) {
+          // Get the current statusList
+          List<dynamic> statusList = docData['statusList'] ?? [];
+
+          // Find the next incomplete status and mark it as completed
+          for (int i = 0; i < statusList.length; i++) {
+            if (statusList[i]['completed'] == false) {
+              statusList[i]['completed'] = true; // Mark the next incomplete item as completed
+              break; // Exit after updating the first incomplete item
+            }
+          }
+
+          // Update the document with the modified statusList
+          await docRef.update({
+            'statusList': statusList,
+          });
+
+          print("Next status updated successfully for id: $id");
+          return true; // Operation succeeded
+        } else {
+          print("No data found in the document for id: $id");
+          return false; // Data not found
+        }
+      } else {
+        print("Document with id $id does not exist.");
+        return false; // Document not found
+      }
+    } catch (e) {
+      print("Error updating status: $e");
+      return false; // Error occurred
+    }
+  }
+  Future<bool> updateByAdminAssignFinalWorker(String id) async {
     try {
       // Query the collection to find the document with the given id
       QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
