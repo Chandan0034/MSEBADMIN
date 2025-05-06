@@ -104,10 +104,38 @@ class FirebaseAuthService {
 
     return FirebaseFirestore.instance.collection("MediaFileWithLocation").where('isCompleted',isEqualTo: false).snapshots();
   }
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1() {
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1({required String selectFilter}) {
+    print("Selected");
+    print(selectFilter);
 
-    return FirebaseFirestore.instance.collection("MediaFileWithLocation").snapshots();
+    final collection = FirebaseFirestore.instance.collection("MediaFileWithLocation");
+
+    if (selectFilter == "new") {
+      // ✅ Requires composite index: isCompleted == false + orderBy createdAt DESC
+      return collection
+          .where('isCompleted', isEqualTo: false)
+          .orderBy('createdAt', descending: true)
+          .snapshots();
+    } else if (selectFilter == 'inProcess') {
+      // ✅ Filter by isCompleted == false AND inProcess == true
+      return collection
+          .where('isCompleted', isEqualTo: false)
+          .where('inProcess', isEqualTo: true)
+          .snapshots();
+    } else if (selectFilter == 'completed') {
+      // ✅ Filter by isCompleted == true
+      return collection
+          .where('isCompleted', isEqualTo: true)
+          .snapshots();
+    } else {
+      // Default fallback to 'new' logic
+      return collection
+          .where('isCompleted', isEqualTo: false)
+          .orderBy('createdAt', descending: true)
+          .snapshots();
+    }
   }
+
   Stream<List<Map<String, dynamic>>> getMediaDataStream() {
     return _firestore
         .collection("MediaFileWithLocation")
