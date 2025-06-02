@@ -198,65 +198,55 @@ class _AssignWorkState extends State<AssignWork> {
   final FirebaseAuthService _authService =FirebaseAuthService();
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: [
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-              return Padding(
-                padding: const EdgeInsets.only(left: 12, right: 12), // Only horizontal padding
-                child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                  stream: _authService.fetchAllUserData(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'No data available',
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                        ),
-                      );
-                    } else {
-                      final mediaData = snapshot.data!.docs;
-                      return ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: mediaData.length,
-                        itemBuilder: (context, index) {
-                          final mediaItem = mediaData[index].data();
-                          int completedCount = 0;
+    return StreamBuilder<List<QueryDocumentSnapshot<Map<String, dynamic>>>>(
+      stream: _authService.fetchAssignedMediaStream(), // updated stream returning List<QueryDocumentSnapshot>
+      builder: (context, snapshot) {
+        print("snapshot");
+        print(snapshot);
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+            child: Text('No data available', style: TextStyle(fontSize: 16)),
+          );
+        }
 
-                          for (var status in mediaItem['statusList']) {
-                            if (status['completed'] == true) {
-                              completedCount++;
-                            }
-                          }
+        final mediaData = snapshot.data!;
+        print("MediaData");
+        final filteredItems = mediaData.where((doc) {
+          final mediaItem = doc.data();
+          int completedCount = 0;
+          for (var status in mediaItem['statusList']) {
+            if (status['completed'] == true) completedCount++;
+          }
+          return completedCount > 2 && completedCount <= 3;
+        }).toList();
 
-                          // Apply the condition
-                          if (completedCount >2 && completedCount <=3) {
-                            return MediaItemCardScreen(
-                              mediaItem: mediaItem,
-                              cnt: completedCount - 1,
-                            );
-                          } else {
-                            return const SizedBox.shrink(); // Empty widget if condition not met
-                          }
-                        },
-                      );
-                    }
-                  },
-                ),
-              );
-            },
-            childCount: 1,
-          ),
-        ),
-
-      ],
+        return CustomScrollView(
+          slivers: [
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  final mediaItem = filteredItems[index].data();
+                  int completedCount = 0;
+                  for (var status in mediaItem['statusList']) {
+                    if (status['completed'] == true) completedCount++;
+                  }
+                  return MediaItemCardScreen(
+                    mediaItem: mediaItem,
+                    cnt: completedCount - 1,
+                  );
+                },
+                childCount: filteredItems.length,
+              ),
+            ),
+          ],
+        );
+      },
     );
+
   }
 }
 

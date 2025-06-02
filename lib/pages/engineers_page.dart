@@ -183,49 +183,127 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
   bool _isLoading = false;
   bool _isAssigned = false;
   // Call your updateByAdminAssignWorker function here
+  //make a function show dialogbox where show the all worker list using the function Future<List<Map<String, dynamic>>> getAllWorkerData()  it return the list of worker if worker is not there then show no worker available
+  _showWorkerSelectionDialog(BuildContext context,String id) async {
+    final List<Map<String, dynamic>> workers = await _authService
+        .getAllWorkerData();
+
+    if (workers.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (_) =>
+            AlertDialog(
+              title: Text('Workers'),
+              content: Text('No worker available.'),
+              actions: [
+                TextButton(
+                    onPressed: (){
+                      Navigator.pop(context);
+                      setState(() {
+                        _isLoading=false;
+                      });
+                    },
+                    child: Text('OK')),
+
+              ],
+            ),
+      );
+      return;
+    }
+
+    List<String> selectedEmails = [];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Select Workers'),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: workers.map((worker) {
+                    final email = worker['email'];
+                    final name = worker['username'];
+                    final isSelected = selectedEmails.contains(email);
+
+                    return CheckboxListTile(
+                      title: Text(name),
+                      subtitle: Text(email),
+                      value: isSelected,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          if (value == true) {
+                            selectedEmails.add(email);
+                          } else {
+                            selectedEmails.remove(email);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () async{
+                    try {
+                      // Call the updateByAdminAssignWorker function
+                      bool result = await _authService.updateByAdminAssignWorker(id);
+                      _authService.assignWorkersByEmailList(selectedEmails,id);
+                      setState(() {
+                        _isLoading = false;
+                        if (result) {
+                          _isAssigned = true; // Mark as assigned if successful
+                        }
+                      });
+
+                      if (result) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text("Status updated successfully!"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        Navigator.pop(context);
+                        print(
+                            'Selected Emails: $selectedEmails');
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text("Failed to update status."),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      setState(() {
+                        _isLoading = false;
+                      });
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("Error: $e"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                    // <- Do something with selected emails
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
   Future<void> _onAssignTap(String id) async {
     setState(() {
       _isLoading = true;
     });
-
-    try {
-      // Call the updateByAdminAssignWorker function
-      bool result = await _authService.updateByAdminAssignWorker(id);
-
-      setState(() {
-        _isLoading = false;
-        if (result) {
-          _isAssigned = true; // Mark as assigned if successful
-        }
-      });
-
-      if (result) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Status updated successfully!"),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text("Failed to update status."),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error: $e"),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    _showWorkerSelectionDialog(context, id);
   }
   @override
   Widget build(BuildContext context) {

@@ -3,10 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:io';
+import 'package:rxdart/rxdart.dart';
 class FirebaseAuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
+  String? get currentUserEmail => _firebaseAuth.currentUser?.email;
 
   final month=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -20,6 +22,8 @@ class FirebaseAuthService {
         "email": email,
         "type":type,
         'createdAt': DateTime.now(),
+        "isAssign":false,
+        "assignedIds":[],
       });
       return true;
     } catch (e) {
@@ -100,6 +104,119 @@ class FirebaseAuthService {
     });
   }
 
+  Stream<List<QueryDocumentSnapshot<Map<String, dynamic>>>> fetchAssignedMediaStream() async* {
+    final email = FirebaseAuth.instance.currentUser?.email;
+    if (email == null) {
+      print("No current user");
+      yield [];
+      return;
+    }
+
+    final adminSnapshot = await FirebaseFirestore.instance
+        .collection('Admin')
+        .where('email', isEqualTo: email)
+        .where('type', isEqualTo: 'worker')
+        .get();
+
+    if (adminSnapshot.docs.isEmpty) {
+      print("No matching admin user");
+      yield [];
+      return;
+    }
+
+    final assignedIdsRaw = adminSnapshot.docs.first.data()['assignedIds'];
+    if (assignedIdsRaw == null || !(assignedIdsRaw is List)) {
+      print("assignedIds missing or invalid");
+      yield [];
+      return;
+    }
+
+    final assignedIds = List<String>.from(assignedIdsRaw);
+    if (assignedIds.isEmpty) {
+      print("assignedIds list is empty");
+      yield [];
+      return;
+    }
+
+    const int chunkSize = 10;
+
+    // Split assignedIds into chunks of max chunkSize (because Firestore 'whereIn' supports max 10)
+    List<List<String>> chunks = [];
+    for (var i = 0; i < assignedIds.length; i += chunkSize) {
+      chunks.add(
+        assignedIds.sublist(
+          i,
+          i + chunkSize > assignedIds.length ? assignedIds.length : i + chunkSize,
+        ),
+      );
+    }
+
+    // Create a list of streams, each querying one chunk of IDs
+    final streams = chunks.map((chunk) {
+      return FirebaseFirestore.instance
+          .collection('MediaFileWithLocation')
+          .where('id', whereIn: chunk)
+          .snapshots();
+    }).toList();
+
+    // Combine all snapshot streams into one stream that emits a combined list of documents
+    yield* Rx.combineLatestList(streams).map((listOfSnapshots) {
+      return listOfSnapshots.expand((snap) => snap.docs).toList();
+    });
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAssignedMediaStream1() async* {
+    print("🔍 Starting fetchAssignedMediaStream...");
+
+    final email = currentUserEmail;
+    print("📧 Current user email: $email");
+
+    if (email == null) {
+      print("⚠️ No user email found. Returning empty stream.");
+      yield* const Stream.empty();
+      return;
+    }
+
+    final adminSnapshot = await FirebaseFirestore.instance
+        .collection('Admin')
+        .where('email', isEqualTo: email)
+        .where('type', isEqualTo: 'worker')
+        .get();
+
+    print("📄 Admin snapshot docs count: ${adminSnapshot.docs.length}");
+
+    if (adminSnapshot.docs.isEmpty) {
+      print("⚠️ No admin/worker found for email: $email. Returning empty stream.");
+      yield* const Stream.empty();
+      return;
+    }
+
+    final rawAssignedIds = adminSnapshot.docs.first.data()['assignedIds'];
+    print("🗂️ Raw assignedIds from Firestore: $rawAssignedIds");
+
+    final assignedIds = List<String>.from(rawAssignedIds ?? []);
+    print("✅ Parsed assignedIds list: $assignedIds");
+
+    if (assignedIds.isEmpty) {
+      print("⚠️ assignedIds list is empty. Returning empty stream.");
+      yield* const Stream.empty();
+      return;
+    }
+
+    final limitedIds = assignedIds.length > 10 ? assignedIds.sublist(0, 10) : assignedIds;
+    print("🔢 limitedIds used in query: $limitedIds");
+
+    final query = FirebaseFirestore.instance
+        .collection('MediaFileWithLocation')
+        .where(FieldPath.documentId, whereIn: limitedIds);
+
+    print("📡 Fetching MediaFileWithLocation snapshots with document IDs: $limitedIds");
+    print(query.snapshots());
+    yield* query.snapshots();
+  }
+
+
+
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData() {
 
     return FirebaseFirestore.instance.collection("MediaFileWithLocation").where('isCompleted',isEqualTo: false).snapshots();
@@ -157,6 +274,31 @@ class FirebaseAuthService {
     } catch (e) {
       print("Error fetching data: $e");
       return [];
+    }
+  }
+  // update in admin panel to assign worker isAssign true or false whenever click on this function make all false of worker then assign true comming from email of worker
+  Future<void> assignWorkersByEmailList(List<String> selectedEmails, String id) async {
+    final adminCollection = FirebaseFirestore.instance.collection('Admin');
+    print("Collection");
+    print(adminCollection);
+    for (String email in selectedEmails) {
+      final querySnapshot = await adminCollection
+          .where('type', isEqualTo: 'worker')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final docId = querySnapshot.docs.first.id;
+
+        await adminCollection.doc(docId).update({
+          'assignedIds': FieldValue.arrayUnion([id]), // Only add, do not overwrite or reset
+        });
+
+        print('Added ID "$id" to assignedIds of worker: $email');
+      } else {
+        print('Worker with email "$email" not found.');
+      }
     }
   }
 
@@ -323,8 +465,7 @@ class FirebaseAuthService {
       return false;
     }
   }
-
-
+  //find all worker data and return it if type equal to worker
   Future<bool> uploadAlertMessage(String message) async{
     try{
       User? user = _firebaseAuth.currentUser;
@@ -344,6 +485,20 @@ class FirebaseAuthService {
     }catch(e){
       print("Error adding media file data: $e");
       return false;
+    }
+  }
+  Future<List<Map<String, dynamic>>> getAllWorkerData() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection("Admin")
+          .where("type", isEqualTo: "worker")
+          .get();
+      List<Map<String, dynamic>> workerData = querySnapshot.docs.map((doc) =>
+          doc.data()).toList();
+      return workerData;
+    } catch (e) {
+      print("Error fetching worker data: $e");
+      return [];
     }
   }
 
