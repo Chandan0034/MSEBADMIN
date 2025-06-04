@@ -64,6 +64,13 @@ class _SecondSplashPageState extends State<SecondSplashPage> {
             Column(
               children: [
                 Image.asset(
+                  'assets/Image/dpu.jpg', // Add your logo image here
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.contain,
+                ),
+                SizedBox(height: 20,),
+                Image.asset(
                   'assets/Image/splash_screen_logo.png', // Add your logo image here
                   width: 200,
                   height: 200,

@@ -221,6 +221,9 @@ class FirebaseAuthService {
 
     return FirebaseFirestore.instance.collection("MediaFileWithLocation").where('isCompleted',isEqualTo: false).snapshots();
   }
+  Stream<QuerySnapshot<Map<String,dynamic>>> fetchAllWorkerData() {
+    return FirebaseFirestore.instance.collection("Admin").where('type',isEqualTo: 'worker').snapshots();
+  }
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1({required String selectFilter}) {
     print("Selected");
     print(selectFilter);
@@ -380,6 +383,7 @@ class FirebaseAuthService {
           await docRef.update({
             'statusList': statusList,
             'inProcess':false,
+            'isCompleted': true,
             'completed':true
           });
 
@@ -455,7 +459,6 @@ class FirebaseAuthService {
       await _firestore.collection("MediaFileWithLocation").doc(docId).update({
         'completedURL': downloadURL,
         'uploadedAt': DateTime.now(),
-        'isCompleted': true,
         'completedURLType': fileType,
       });
 

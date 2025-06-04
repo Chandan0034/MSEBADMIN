@@ -251,20 +251,20 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             Text("${widget.mediaItem['description']}",style: TextStyle(fontWeight: FontWeight.w500,fontFamily: 'Poppins',fontSize: 14)),
 
             // Display description below the media file
-            // Text(
-            //   "Date : ${widget.mediaItem['date']}",
-            //   style: const TextStyle(
-            //       fontWeight: FontWeight.w500,
-            //       fontSize: 16,
-            //       fontFamily: "Poppins"),
-            // ),
-            // const SizedBox(height: 2),
-            // Text("Time : ${widget.mediaItem['time']}",
-            //     style: const TextStyle(
-            //         fontWeight: FontWeight.w500,
-            //         fontSize: 16,
-            //         fontFamily: "Poppins")),
-            // const SizedBox(height: 8),
+            Text(
+              "Date : ${widget.mediaItem['date']}",
+              style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  fontFamily: "Poppins"),
+            ),
+            const SizedBox(height: 2),
+            Text("Time : ${widget.mediaItem['time']}",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    fontFamily: "Poppins")),
+            const SizedBox(height: 8),
 
             GestureDetector(
               onTap: !allowMarkAsSolved
