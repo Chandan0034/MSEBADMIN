@@ -139,7 +139,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
     final downloadURL=widget.mediaItem['downloadURL']?? '';
     final currentStatus = widget.cnt;
     final allowMarkAsSolved=widget.mediaItem['isCompleted'];
-    final completedUrl=widget.mediaItem['completedURL'];
+    String completedUrl=widget.mediaItem['completedURL'];
     final inProcess=widget.mediaItem['inProcess'];
     print("AllowMarkAsSolved");
     print(currentStatus);
@@ -163,7 +163,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15), // Apply border radius here
                       child: CachedNetworkImage(
-                        imageUrl: allowMarkAsSolved?completedUrl:downloadURL,
+                        imageUrl: completedUrl.isNotEmpty?completedUrl:downloadURL,
                         fit: BoxFit.fill,
                         height: 300,
                         width: 180,
@@ -267,7 +267,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
             const SizedBox(height: 8),
 
             GestureDetector(
-              onTap: !allowMarkAsSolved
+              onTap: !completedUrl.isNotEmpty
                   ? null
                   : () async {
                 setState(() => isUpdating = true);
@@ -279,12 +279,12 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                 margin: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 2),
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                 decoration: BoxDecoration(
-                  color:allowMarkAsSolved ? Colors.white:Colors.white.withOpacity(0.1),
+                  color:completedUrl.isNotEmpty ? Colors.white:Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   //opacity
                   boxShadow: [
                     BoxShadow(
-                      color:allowMarkAsSolved?Colors.grey.withOpacity(0.5):Colors.grey.withOpacity(0.1),
+                      color:completedUrl.isNotEmpty?Colors.grey.withOpacity(0.5):Colors.grey.withOpacity(0.1),
                       blurRadius: 5,
                       offset: const Offset(0, 4),
                     ),
@@ -301,7 +301,7 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                      ? "Mark as solved" : "Completed",
                     style: TextStyle(
                       fontFamily: "Poppins",
-                      color:allowMarkAsSolved?Colors.black: Colors.black.withOpacity(0.1),
+                      color:completedUrl.isNotEmpty?Colors.black: Colors.black.withOpacity(0.1),
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),

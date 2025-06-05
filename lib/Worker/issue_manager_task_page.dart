@@ -193,7 +193,7 @@ class _AssignWorkState extends State<AssignWork> {
                         itemBuilder: (context, index) {
                           final mediaItem = mediaData[index].data();
                           int completedCount = 0;
-
+                          String uploadFile=mediaItem['completedURL'];
                           for (var status in mediaItem['statusList']) {
                             if (status['completed'] == true) {
                               completedCount++;
@@ -201,7 +201,7 @@ class _AssignWorkState extends State<AssignWork> {
                           }
 
                           // Apply the condition
-                          if (completedCount > 3 ) {
+                          if (completedCount > 3 || uploadFile.isNotEmpty) {
                             return MediaItemCardScreen(
                               mediaItem: mediaItem,
                               cnt: completedCount - 1,

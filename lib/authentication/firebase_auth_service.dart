@@ -231,21 +231,22 @@ class FirebaseAuthService {
     final collection = FirebaseFirestore.instance.collection("MediaFileWithLocation");
 
     if (selectFilter == "new") {
-      // ✅ Requires composite index: isCompleted == false + orderBy createdAt DESC
+      // ✅ Requires composite index: completed == false + orderBy createdAt DESC
       return collection
           .where('isCompleted', isEqualTo: false)
           .orderBy('createdAt', descending: true)
           .snapshots();
     } else if (selectFilter == 'inProcess') {
-      // ✅ Filter by isCompleted == false AND inProcess == true
+      // ✅ Filter by completed == false AND inProcess == true
       return collection
           .where('isCompleted', isEqualTo: false)
-          .where('inProcess', isEqualTo: true)
+          .orderBy('createdAt',descending: true)
           .snapshots();
     } else if (selectFilter == 'completed') {
-      // ✅ Filter by isCompleted == true
+      // ✅ Filter by completed == true
       return collection
           .where('isCompleted', isEqualTo: true)
+          .orderBy('createdAt',descending:false)
           .snapshots();
     } else {
       // Default fallback to 'new' logic
@@ -383,7 +384,7 @@ class FirebaseAuthService {
           await docRef.update({
             'statusList': statusList,
             'inProcess':false,
-            'isCompleted': true,
+            'isCompleted':true,
             'completed':true
           });
 
