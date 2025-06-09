@@ -194,6 +194,7 @@ class _AssignWorkState extends State<AssignWork> {
                           final mediaItem = mediaData[index].data();
                           int completedCount = 0;
                           String uploadFile=mediaItem['completedURL'];
+                          print(uploadFile);
                           for (var status in mediaItem['statusList']) {
                             if (status['completed'] == true) {
                               completedCount++;
@@ -201,7 +202,9 @@ class _AssignWorkState extends State<AssignWork> {
                           }
 
                           // Apply the condition
-                          if (completedCount > 3 || uploadFile.isNotEmpty) {
+                          print(uploadFile.isEmpty);
+                          if (uploadFile.isEmpty) {
+
                             return MediaItemCardScreen(
                               mediaItem: mediaItem,
                               cnt: completedCount - 1,
@@ -344,7 +347,8 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
         id: id,
         fileType: _isVideo ? 'video' : 'image',
       );
-
+      print("Success");
+      print(success);
       if (!success) {
         throw Exception('Upload failed');
       }
