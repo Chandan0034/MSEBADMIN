@@ -47,7 +47,7 @@ flutter:
     - assets/Image/logo.png
     - assets/Image/header.png
     - assets/Image/filter.png
-    - assets/Image/dpu.jpg
+    - assets/Image/dpu.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

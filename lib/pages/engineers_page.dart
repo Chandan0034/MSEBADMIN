@@ -381,6 +381,21 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen> {
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                     fontFamily: "Poppins")),
+            SizedBox(height: 10,),
+            Text(
+              "Date : ${widget.mediaItem['date']}",
+              style: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                  fontFamily: "Poppins"),
+            ),
+            const SizedBox(height: 2),
+            Text("Time : ${widget.mediaItem['time']}",
+                style: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    fontFamily: "Poppins")),
+            const SizedBox(height: 8),
 
             GestureDetector(
               onTap: _isLoading || _isAssigned ? null :()=> _onAssignTap(id),

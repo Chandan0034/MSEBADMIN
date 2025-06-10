@@ -160,17 +160,30 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                 children: [
                   Container(
                     alignment: Alignment.topLeft,
+                    height: 300,
+                    width: 180,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15), // Apply border radius here
-                      child: CachedNetworkImage(
-                        imageUrl: completedUrl.isNotEmpty?completedUrl:downloadURL,
-                        fit: BoxFit.fill,
-                        height: 300,
-                        width: 180,
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      borderRadius: BorderRadius.circular(15),
+                      child: PageView(
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: downloadURL,
+                            fit: BoxFit.fill,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) => Icon(Icons.error),
+                          ),
+                          if (completedUrl.isNotEmpty)
+                            CachedNetworkImage(
+                              imageUrl: completedUrl,
+                              fit: BoxFit.fill,
+                              placeholder: (context, url) => Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (context, url, error) => Icon(Icons.error),
+                            ),
+                        ],
                       ),
                     ),
                   ),
@@ -222,11 +235,12 @@ class _MediaItemCardScreenState extends State<MediaItemCardScreen>
                               child: AnimatedDefaultTextStyle(
                                 duration: const Duration(milliseconds: 500),
                                 style: TextStyle(
-                                    color: index <= currentStatus
-                                        ? Colors.black
-                                        : Colors.grey,
-                                    fontWeight: FontWeight.w500,
-                                    fontFamily: "Poppins"),
+                                  color: index <= currentStatus
+                                      ? Colors.black
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: "Poppins",
+                                ),
                                 child: Text(status),
                               ),
                             ),

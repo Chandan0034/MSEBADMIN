@@ -224,36 +224,42 @@ class FirebaseAuthService {
   Stream<QuerySnapshot<Map<String,dynamic>>> fetchAllWorkerData() {
     return FirebaseFirestore.instance.collection("Admin").where('type',isEqualTo: 'worker').snapshots();
   }
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1({required String selectFilter}) {
-    print("Selected");
-    print(selectFilter);
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchAllUserData1({
+    required String selectFilter,
+  }) {
+    print("Selected Filter: $selectFilter");
 
     final collection = FirebaseFirestore.instance.collection("MediaFileWithLocation");
 
-    if (selectFilter == "new") {
-      // ✅ Requires composite index: completed == false + orderBy createdAt DESC
-      return collection
-          .where('isCompleted', isEqualTo: false)
-          .orderBy('createdAt', descending: true)
-          .snapshots();
-    } else if (selectFilter == 'inProcess') {
-      // ✅ Filter by completed == false AND inProcess == true
-      return collection
-          .where('isCompleted', isEqualTo: false)
-          .orderBy('createdAt',descending: true)
-          .snapshots();
-    } else if (selectFilter == 'completed') {
-      // ✅ Filter by completed == true
-      return collection
-          .where('isCompleted', isEqualTo: true)
-          .orderBy('createdAt',descending:false)
-          .snapshots();
-    } else {
-      // Default fallback to 'new' logic
-      return collection
-          .where('isCompleted', isEqualTo: false)
-          .orderBy('createdAt', descending: true)
-          .snapshots();
+    switch (selectFilter) {
+      case "new":
+      // ✅ New items: isCompleted == false, newest first
+        return collection
+            .where('isCompleted', isEqualTo: false)
+            .orderBy('createdAt', descending: true)
+            .snapshots();
+
+      case "inProcess":
+      // ✅ In-process items: isCompleted == false, order by createdAt
+        return collection
+            .where('isCompleted', isEqualTo: false)
+            .orderBy('createdAt', descending: true)
+            .snapshots();
+
+      case "completed":
+      // ✅ Completed items: isCompleted == true, oldest first
+        return collection
+            .where('isCompleted', isEqualTo: true)
+            .orderBy('createdAt', descending: true)
+            .snapshots();
+
+      default:
+      // ⚠️ Fallback to 'new' filter if unknown filter is received
+        print("⚠️ Unknown filter, falling back to 'new'");
+        return collection
+            .where('isCompleted', isEqualTo: false)
+            .orderBy('createdAt', descending: true)
+            .snapshots();
     }
   }
 
